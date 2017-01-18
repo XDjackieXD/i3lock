@@ -7,7 +7,6 @@
 #define DRAW_TEXT_PAM_LOCK
 #define DRAW_TEXT_PAM_WRONG
 #define DRAW_TEXT_LOCK_FAILED
-#define DRAW_TEXT_ATTEMPTS
 
 /* define button sizes */
 #define BUTTON_RADIUS	90

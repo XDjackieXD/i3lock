@@ -253,7 +253,6 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 break;
 #endif
             default:
-#ifdef DRAW_TEXT_ATTEMPTS
                 if (show_failed_attempts && failed_attempts > 0) {
                     if (failed_attempts > 999) {
                         text = "> 999";
@@ -264,7 +263,6 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                     cairo_set_source_rgb(ctx, TEXT_ATTEMPTS_R/255, TEXT_ATTEMPTS_G/255, TEXT_ATTEMPTS_B/255);
                     cairo_set_font_size(ctx, TEXT_ATTEMPTS_SIZE);
                 }
-#endif
                 break;
         }
 
