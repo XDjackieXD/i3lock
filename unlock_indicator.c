@@ -127,7 +127,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                     int y = (xr_resolutions[screen].y + ((xr_resolutions[screen].height / 2) - (cairo_image_surface_get_height(img) / 2)));
                     cairo_set_source_surface(xcb_ctx, img, x, y);
                     cairo_paint(xcb_ctx);
-                
+                }
             } else {
                 cairo_set_source_surface(xcb_ctx, img, 0, 0);
                 cairo_paint(xcb_ctx);
