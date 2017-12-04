@@ -3,9 +3,9 @@
 //#define IGNORE_SCALING
 
 /* define what texts to show */
-#define DRAW_TEXT_PAM_VERIFY
-#define DRAW_TEXT_PAM_LOCK
-#define DRAW_TEXT_PAM_WRONG
+#define DRAW_TEXT_AUTH_VERIFY
+#define DRAW_TEXT_AUTH_LOCK
+#define DRAW_TEXT_AUTH_WRONG
 #define DRAW_TEXT_LOCK_FAILED
 
 /* define button sizes */
@@ -54,22 +54,22 @@
 
 
 /* Inner circle fill while verifying */
-#define FILL_PAM_VERIFY_R	0.0
-#define FILL_PAM_VERIFY_G	114.0
-#define FILL_PAM_VERIFY_B	255.0
-#define FILL_PAM_VERIFY_A	0.75
+#define FILL_AUTH_VERIFY_R	0.0
+#define FILL_AUTH_VERIFY_G	114.0
+#define FILL_AUTH_VERIFY_B	255.0
+#define FILL_AUTH_VERIFY_A	0.75
 
 /* Inner circle fill while locking */
-#define FILL_PAM_LOCK_R		0.0
-#define FILL_PAM_LOCK_G		114.0
-#define FILL_PAM_LOCK_B		255.0
-#define FILL_PAM_LOCK_A		0.75
+#define FILL_AUTH_LOCK_R		0.0
+#define FILL_AUTH_LOCK_G		114.0
+#define FILL_AUTH_LOCK_B		255.0
+#define FILL_AUTH_LOCK_A		0.75
 
 /* Inner circle fill after wrong password verification */
-#define FILL_PAM_WRONG_R	250.0
-#define FILL_PAM_WRONG_G	0.0
-#define FILL_PAM_WRONG_B	0.0
-#define FILL_PAM_WRONG_A	0.75
+#define FILL_AUTH_WRONG_R	250.0
+#define FILL_AUTH_WRONG_G	0.0
+#define FILL_AUTH_WRONG_B	0.0
+#define FILL_AUTH_WRONG_A	0.75
 
 /* Inner circle fill when locking of the screen failed */
 #define FILL_LOCK_FAILED_R	250.0
@@ -85,19 +85,19 @@
 
 
 /* Outer stroke color while verifying */
-#define STROKE_PAM_VERIFY_R	51.0
-#define STROKE_PAM_VERIFY_G	0.0
-#define STROKE_PAM_VERIFY_B	250.0
+#define STROKE_AUTH_VERIFY_R	51.0
+#define STROKE_AUTH_VERIFY_G	0.0
+#define STROKE_AUTH_VERIFY_B	250.0
 
 /* Outer stroke color while locking */
-#define STROKE_PAM_LOCK_R	51.0
-#define STROKE_PAM_LOCK_G	0.0
-#define STROKE_PAM_LOCK_B	250.0
+#define STROKE_AUTH_LOCK_R	51.0
+#define STROKE_AUTH_LOCK_G	0.0
+#define STROKE_AUTH_LOCK_B	250.0
 
 /* Outer circle color after wrong password verification */
-#define STROKE_PAM_WRONG_R	125.0
-#define STROKE_PAM_WRONG_G	51.0
-#define STROKE_PAM_WRONG_B	0.0
+#define STROKE_AUTH_WRONG_R	125.0
+#define STROKE_AUTH_WRONG_G	51.0
+#define STROKE_AUTH_WRONG_B	0.0
 
 /* Outer circle color when locking of the screen failed */
 #define STROKE_LOCK_FAILED_R	125.0
@@ -105,6 +105,6 @@
 #define STROKE_LOCK_FAILED_B	0.0
 
 /* Outer circle color while idle */
-#define STROKE_PAM_IDLE_R	51.0
-#define STROKE_PAM_IDLE_G	125.0
-#define STROKE_PAM_IDLE_B	0.0
+#define STROKE_AUTH_IDLE_R	51.0
+#define STROKE_AUTH_IDLE_G	125.0
+#define STROKE_AUTH_IDLE_B	0.0
