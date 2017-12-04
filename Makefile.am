@@ -36,6 +36,7 @@ i3lock_LDADD = \
 	$(CODE_COVERAGE_LDFLAGS)
 
 i3lock_SOURCES = \
+	fancyconfig.h \
 	cursors.h \
 	i3lock.c \
 	i3lock.h \

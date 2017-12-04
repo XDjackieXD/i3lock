@@ -16,7 +16,7 @@
 #include <cairo.h>
 #include <cairo/cairo-xcb.h>
 
-#include "config.h"
+#include "fancyconf.h"
 #include "i3lock.h"
 #include "xcb.h"
 #include "unlock_indicator.h"
