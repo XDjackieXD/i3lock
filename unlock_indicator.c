@@ -20,7 +20,7 @@
 #include "i3lock.h"
 #include "xcb.h"
 #include "unlock_indicator.h"
-#include "xinerama.h"
+#include "randr.h"
 
 /*******************************************************************************
  * Variables defined in i3lock.c.
@@ -75,10 +75,10 @@ extern xcb_screen_t *screen;
 /* Cache the screen’s visual, necessary for creating a Cairo context. */
 static xcb_visualtype_t *vistype;
 
-/* Maintain the current unlock/PAM state to draw the appropriate unlock
+/* Maintain the current unlock/auth state to draw the appropriate unlock
  * indicator. */
 unlock_state_t unlock_state;
-pam_state_t pam_state;
+auth_state_t auth_state;
 
 /*
  * Returns the scaling factor of the current screen. E.g., on a 227 DPI MacBook
@@ -155,7 +155,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
     }
 
     if (unlock_indicator &&
-        (unlock_state >= STATE_KEY_PRESSED || pam_state > STATE_PAM_IDLE)) {
+        (unlock_state >= STATE_KEY_PRESSED || auth_state > STATE_AUTH_IDLE)) {
         cairo_scale(ctx, scaling_factor(), scaling_factor());
         /* Draw a (centered) circle with transparent background. */
         cairo_set_line_width(ctx, 10.0);
@@ -166,18 +166,18 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                   0 /* start */,
                   2 * M_PI /* end */);
 
-        /* Use the appropriate color for the different PAM states
+        /* Use the appropriate color for the different auth states
          * (currently verifying, wrong password, or default) */
 #ifdef FILL_CIRCLE
-        switch (pam_state) {
-            case STATE_PAM_VERIFY:
-                cairo_set_source_rgba(ctx, FILL_PAM_VERIFY_R/255 , FILL_PAM_VERIFY_G/255, FILL_PAM_VERIFY_B/255, FILL_PAM_VERIFY_A);
+        switch (auth_state) {
+            case STATE_AUTH_VERIFY:
+                cairo_set_source_rgba(ctx, FILL_AUTH_VERIFY_R/255 , FILL_AUTH_VERIFY_G/255, FILL_AUTH_VERIFY_B/255, FILL_AUTH_VERIFY_A);
                 break;
-            case STATE_PAM_LOCK:
-                cairo_set_source_rgba(ctx, FILL_PAM_LOCK_R/255 , FILL_PAM_LOCK_G/255, FILL_PAM_LOCK_B/255, FILL_PAM_LOCK_A);
+            case STATE_AUTH_LOCK:
+                cairo_set_source_rgba(ctx, FILL_AUTH_LOCK_R/255 , FILL_AUTH_LOCK_G/255, FILL_AUTH_LOCK_B/255, FILL_AUTH_LOCK_A);
                 break;
-            case STATE_PAM_WRONG:
-                cairo_set_source_rgba(ctx, FILL_PAM_WRONG_R/255 , FILL_PAM_WRONG_G/255, FILL_PAM_WRONG_B/255, FILL_PAM_WRONG_A);
+            case STATE_AUTH_WRONG:
+                cairo_set_source_rgba(ctx, FILL_AUTH_WRONG_R/255 , FILL_AUTH_WRONG_G/255, FILL_AUTH_WRONG_B/255, FILL_AUTH_WRONG_A);
                 break;
             case STATE_I3LOCK_LOCK_FAILED:
                 cairo_set_source_rgba(ctx, FILL_LOCK_FAILED_R/255 , FILL_LOCK_FAILED_G/255, FILL_LOCK_FAILED_B/255, FILL_LOCK_FAILED_A);
@@ -189,21 +189,21 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         cairo_fill_preserve(ctx);
 #endif
 
-        switch (pam_state) {
-            case STATE_PAM_VERIFY:
-                cairo_set_source_rgb(ctx, STROKE_PAM_VERIFY_R/255, STROKE_PAM_VERIFY_G/255, STROKE_PAM_VERIFY_B/255);
+        switch (auth_state) {
+            case STATE_AUTH_VERIFY:
+                cairo_set_source_rgb(ctx, STROKE_AUTH_VERIFY_R/255, STROKE_AUTH_VERIFY_G/255, STROKE_AUTH_VERIFY_B/255);
                 break;
-            case STATE_PAM_LOCK:
-                cairo_set_source_rgb(ctx, STROKE_PAM_LOCK_R/255, STROKE_PAM_LOCK_G/255, STROKE_PAM_LOCK_B/255);
+            case STATE_AUTH_LOCK:
+                cairo_set_source_rgb(ctx, STROKE_AUTH_LOCK_R/255, STROKE_AUTH_LOCK_G/255, STROKE_AUTH_LOCK_B/255);
                 break;
-            case STATE_PAM_WRONG:
-                cairo_set_source_rgb(ctx, STROKE_PAM_WRONG_R/255, STROKE_PAM_WRONG_G/255, STROKE_PAM_WRONG_B/255);
+            case STATE_AUTH_WRONG:
+                cairo_set_source_rgb(ctx, STROKE_AUTH_WRONG_R/255, STROKE_AUTH_WRONG_G/255, STROKE_AUTH_WRONG_B/255);
                 break;
             case STATE_I3LOCK_LOCK_FAILED:
                 cairo_set_source_rgb(ctx, STROKE_LOCK_FAILED_R/255, STROKE_LOCK_FAILED_G/255, STROKE_LOCK_FAILED_B/255);
                 break;
-            case STATE_PAM_IDLE:
-                cairo_set_source_rgb(ctx, STROKE_PAM_IDLE_R/255, STROKE_PAM_IDLE_G/255, STROKE_PAM_IDLE_B/255);
+            case STATE_AUTH_IDLE:
+                cairo_set_source_rgb(ctx, STROKE_AUTH_IDLE_R/255, STROKE_AUTH_IDLE_G/255, STROKE_AUTH_IDLE_B/255);
                 break;
         }
         cairo_stroke(ctx);
@@ -223,7 +223,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
 
         cairo_set_line_width(ctx, 10.0);
 
-        /* Display a (centered) text of the current PAM state. */
+        /* Display a (centered) text of the current auth state. */
         char *text = NULL;
         /* We don't want to show more than a 3-digit number. */
         char buf[4];
@@ -231,19 +231,19 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
         cairo_set_source_rgb(ctx, TEXT_R, TEXT_G, TEXT_B);
         cairo_select_font_face(ctx, "sans-serif", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
         cairo_set_font_size(ctx, TEXT_SIZE);
-        switch (pam_state) {
-#ifdef DRAW_TEXT_PAM_VERIFY
-            case STATE_PAM_VERIFY:
+        switch (auth_state) {
+#ifdef DRAW_TEXT_AUTH_VERIFY
+            case STATE_AUTH_VERIFY:
                 text = "verifying…";
                 break;
 #endif
-#ifdef DRAW_TEXT_PAM_LOCK
-            case STATE_PAM_LOCK:
+#ifdef DRAW_TEXT_AUTH_LOCK
+            case STATE_AUTH_LOCK:
                 text = "locking…";
                 break;
 #endif
-#ifdef DRAW_TEXT_PAM_WRONG
-            case STATE_PAM_WRONG:
+#ifdef DRAW_TEXT_AUTH_WRONG
+            case STATE_AUTH_WRONG:
                 text = "wrong!";
                 break;
 #endif
@@ -279,7 +279,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
             cairo_close_path(ctx);
         }
 
-        if (pam_state == STATE_PAM_WRONG && (modifier_string != NULL)) {
+        if (auth_state == STATE_AUTH_WRONG && (modifier_string != NULL)) {
             cairo_text_extents_t extents;
             double x, y;
 
@@ -368,7 +368,7 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
  *
  */
 void redraw_screen(void) {
-    DEBUG("redraw_screen(unlock_state = %d, pam_state = %d)\n", unlock_state, pam_state);
+    DEBUG("redraw_screen(unlock_state = %d, auth_state = %d)\n", unlock_state, auth_state);
     xcb_pixmap_t bg_pixmap = draw_image(last_resolution);
     xcb_change_window_attributes(conn, win, XCB_CW_BACK_PIXMAP, (uint32_t[1]){bg_pixmap});
     /* XXX: Possible optimization: Only update the area in the middle of the
