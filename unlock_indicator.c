@@ -183,6 +183,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 cairo_set_source_rgba(ctx, FILL_LOCK_FAILED_R/255 , FILL_LOCK_FAILED_G/255, FILL_LOCK_FAILED_B/255, FILL_LOCK_FAILED_A);
                 break;
             default:
+                if (unlock_state == STATE_NOTHING_TO_DELETE) {
+                    cairo_set_source_rgba(ctx, FILL_NOTHING_TO_DELETE_R/255 , FILL_NOTHING_TO_DELETE_G/255, FILL_NOTHING_TO_DELETE_B/255, FILL_NOTHING_TO_DELETE_A);
+                    break;
+                }
                 cairo_set_source_rgba(ctx, FILL_DEFAULT_R/255 , FILL_DEFAULT_G/255, FILL_DEFAULT_B/255, FILL_DEFAULT_A);
                 break;
         }
@@ -203,6 +207,10 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 cairo_set_source_rgb(ctx, STROKE_LOCK_FAILED_R/255, STROKE_LOCK_FAILED_G/255, STROKE_LOCK_FAILED_B/255);
                 break;
             case STATE_AUTH_IDLE:
+                if (unlock_state == STATE_NOTHING_TO_DELETE) {
+                    cairo_set_source_rgb(ctx, STROKE_NOTHING_TO_DELETE_R/255, STROKE_NOTHING_TO_DELETE_G/255, STROKE_NOTHING_TO_DELETE_B/255);
+                    break;
+                }
                 cairo_set_source_rgb(ctx, STROKE_AUTH_IDLE_R/255, STROKE_AUTH_IDLE_G/255, STROKE_AUTH_IDLE_B/255);
                 break;
         }
@@ -253,6 +261,11 @@ xcb_pixmap_t draw_image(uint32_t *resolution) {
                 break;
 #endif
             default:
+#ifdef DRAW_TEXT_NOTHING_TO_DELETE
+                if (unlock_state == STATE_NOTHING_TO_DELETE) {
+                    text = "no input";
+                }
+#endif
                 if (show_failed_attempts && failed_attempts > 0) {
                     if (failed_attempts > 999) {
                         text = "> 999";

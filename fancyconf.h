@@ -7,6 +7,7 @@
 #define DRAW_TEXT_AUTH_LOCK
 #define DRAW_TEXT_AUTH_WRONG
 #define DRAW_TEXT_LOCK_FAILED
+#define DRAW_TEXT_NOTHING_TO_DELETE
 
 /* define button sizes */
 #define BUTTON_RADIUS	90
@@ -77,6 +78,12 @@
 #define FILL_LOCK_FAILED_B	0.0
 #define FILL_LOCK_FAILED_A	0.75
 
+/* Inner circle fill color when there is nothing to delete */
+#define FILL_NOTHING_TO_DELETE_R    250.0
+#define FILL_NOTHING_TO_DELETE_G    0.0
+#define FILL_NOTHING_TO_DELETE_B    0.0
+#define FILL_NOTHING_TO_DELETE_A    0.75
+
 /* Inner circle fill while idle */
 #define FILL_DEFAULT_R		0.0
 #define FILL_DEFAULT_G		0.0
@@ -108,3 +115,8 @@
 #define STROKE_AUTH_IDLE_R	51.0
 #define STROKE_AUTH_IDLE_G	125.0
 #define STROKE_AUTH_IDLE_B	0.0
+
+/* Outer circle color when there is nothing to delete */
+#define STROKE_NOTHING_TO_DELETE_R      125.0
+#define STROKE_NOTHING_TO_DELETE_G      51.0
+#define STROKE_NOTHING_TO_DELETE_B      0.0
